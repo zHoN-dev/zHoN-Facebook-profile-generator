@@ -52,12 +52,20 @@ function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 function birthdayForAge(age) {
   const today = new Date();
-  const maxYear = today.getFullYear() - age;
-  const minYear = today.getFullYear() - age - 4;
-  const year = minYear + Math.floor(Math.random() * (maxYear - minYear + 1));
-  const month = Math.floor(Math.random() * 12);
-  const day = 1 + Math.floor(Math.random() * 27);
-  return new Date(year, month, day).toISOString().slice(0,10);
+  const latest = new Date(today.getFullYear() - age, today.getMonth(), today.getDate());
+  const earliest = new Date(today.getFullYear() - age - 1, today.getMonth(), today.getDate() + 1);
+  const span = latest.getTime() - earliest.getTime();
+  const date = new Date(earliest.getTime() + Math.floor(Math.random() * (span + 1)));
+  return date.toISOString().slice(0,10);
+}
+
+function formatBirthday(value) {
+  const date = new Date(`${value}T00:00:00`);
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  }).format(date);
 }
 
 function makePhone(i) {
@@ -92,7 +100,7 @@ function profileText(p) {
     `Name: ${p.name}`,
     `Gender: ${p.gender}`,
     `Age: ${p.age}`,
-    `Birthday: ${p.birthday}`,
+    `Birthday: ${formatBirthday(p.birthday)}`,
     `Hometown/City: ${p.hometown}`,
     `High School: ${p.highSchool}`,
     `College: ${p.college}`,
@@ -182,7 +190,7 @@ export default function Home() {
               <div className="details">
                 <span><b>Gender</b>{p.gender}</span>
                 <span><b>Age</b>{p.age}</span>
-                <span><b>Birthday</b>{p.birthday}</span>
+                <span><b>Birthday</b>{formatBirthday(p.birthday)}</span>
                 <span><b>City</b>{p.hometown}</span>
                 <span><b>High school</b>{p.highSchool}</span>
                 <span><b>College</b>{p.college}</span>
